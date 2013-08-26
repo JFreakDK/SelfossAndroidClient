@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="https://"
+        android:dialogTitle="@string/enter_url"
+        android:inputType="textUri"
+        android:key="url"
+        android:title="@string/selfoss_url_title" />
+    <EditTextPreference
+        android:defaultValue="https://"
+        android:dialogTitle="@string/enter_url"
+        android:inputType="textUri"
+        android:key="backup_url"
+        android:title="@string/selfoss_backup_url_title" />
+    <EditTextPreference
+        android:defaultValue="5"
+        android:dialogTitle="@string/connection_timeout"
+        android:key="connection_timeout"
+        android:maxLength="2"
+        android:numeric="integer"
+        android:title="@string/connection_timeout_title" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="@string/username"
+        android:key="username"
+        android:title="@string/username_title" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="@string/password"
+        android:inputType="textPassword"
+        android:key="password"
+        android:title="@string/password_title" />
+    <Preference />
+    
+</PreferenceScreen>

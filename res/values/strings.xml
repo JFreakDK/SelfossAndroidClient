@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Selfoss</string>
+    <string name="title_item_detail"></string>
+    <string name="feed_icon">Feed icon</string>
+    <string name="settings_title">Settings</string>
+    <string name="refresh">Refresh</string>
+    <string name="unread">Unread</string>
+    <string name="all_items">All items</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="keep_unread">Keep unread</string>
+    <string name="star">Star</string>
+    <string name="unstar">Unstar</string>
+    <string name="refresh_items">Refresh items</string>
+    <string name="load_more_items">Load more items</string>
+    <string name="star_item">Star item</string>
+    <string name="unstar_item">Unstar item</string>
+    <string name="mark_item_as_read">Mark item as read</string>
+    <string name="login">login</string>
+    <color name="blueish">#0EA3FF</color>
+    <color name="actionBarTextColor">#FFFFFF</color>
+</resources>

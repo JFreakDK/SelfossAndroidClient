@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <string name="selfoss_url_title">Selfoss primary url</string>
+    <string name="selfoss_backup_url_title">Selfoss secondary url</string>
+    <string name="connection_timeout">Connection timeout</string>
+    <string name="connection_timeout_title">Connection timeout in seconds</string>
+    <string name="username">Username</string>
+    <string name="password_title">Password</string>
+    <string name="username_title">Username</string>
+    <string name="enter_url">Enter URL</string>
+    <string name="password">Password</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_url">URL</string>
+    <string name="pref_header_selfoss">Selfoss</string>
+    
+</resources>
