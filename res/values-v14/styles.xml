@@ -10,9 +10,12 @@
         <!-- API 14 theme customizations can go here. -->
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:actionMenuTextColor">@color/actionBarTextColor</item>
+        <item name="android:actionBarWidgetTheme">@style/Theme.stylingactionbar.widget</item>
     </style>
+
     <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@color/blueish</item>
+        <item name="android:background">@color/actionbar_background_color</item>
+        <item name="android:popupBackground">@color/actionbar_background_color</item>
         <item name="android:titleTextStyle">@style/AppTheme.TitleTextStyle</item>
     </style>
 
@@ -20,4 +23,11 @@
         <item name="android:textColor">@color/actionBarTextColor</item>
     </style>
 
+    <style name="Theme.stylingactionbar.widget" parent="@android:style/Theme.Holo">
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
+    </style>
+
+    <style name="PopupMenu" parent="@android:style/Widget.Holo.ListPopupWindow">
+	    <item name="android:popupBackground">@color/actionbar_background_color</item>  
+	</style>
 </resources>

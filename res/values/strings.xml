@@ -18,6 +18,4 @@
     <string name="unstar_item">Unstar item</string>
     <string name="mark_item_as_read">Mark item as read</string>
     <string name="login">login</string>
-    <color name="blueish">#0EA3FF</color>
-    <color name="actionBarTextColor">#FFFFFF</color>
 </resources>
