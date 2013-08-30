@@ -6,7 +6,6 @@ import org.vester.selfoss.ItemListActivity;
 import org.vester.selfoss.SetupActivity.LoginCallback;
 import org.vester.selfoss.listener.MarkAsUnreadOperationListener;
 import org.vester.selfoss.listener.StarOperationListener;
-import org.vester.selfoss.listener.UnstarOperationListener;
 import org.vester.selfoss.model.FeedEntry;
 
 import android.content.Context;
@@ -67,7 +66,7 @@ public class SelfossOperationFactory implements OperationFactory {
 	}
 
 	@Override
-	public Operation createUnstarOperation(String id, UnstarOperationListener listener) {
+	public Operation createUnstarOperation(String id, StarOperationListener listener) {
 		return new UnstarOperation(id, listener);
 	}
 }

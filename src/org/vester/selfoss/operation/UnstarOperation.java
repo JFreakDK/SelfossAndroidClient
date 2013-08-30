@@ -11,16 +11,16 @@ import java.net.URL;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vester.selfoss.R;
-import org.vester.selfoss.listener.UnstarOperationListener;
+import org.vester.selfoss.listener.StarOperationListener;
 
 public class UnstarOperation implements Operation {
 
 	private String url;
 	private final String id;
-	private final UnstarOperationListener itemListActivity;
+	private final StarOperationListener itemListActivity;
 	private String login;
 
-	public UnstarOperation(String id, UnstarOperationListener listener) {
+	public UnstarOperation(String id, StarOperationListener listener) {
 		this.id = id;
 		this.itemListActivity = listener;
 	}

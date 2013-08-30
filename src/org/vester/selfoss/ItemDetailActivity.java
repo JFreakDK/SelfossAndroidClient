@@ -1,8 +1,6 @@
 package org.vester.selfoss;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -21,8 +19,6 @@ public class ItemDetailActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0EA3FF")));
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_detail);
 

@@ -4,4 +4,5 @@ public interface StarOperationListener {
 
 	void starred(String id);
 
+	void unstarred(String id);
 }

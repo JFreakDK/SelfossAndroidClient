@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 
 import org.vester.selfoss.listener.MarkAsUnreadOperationListener;
 import org.vester.selfoss.listener.StarOperationListener;
-import org.vester.selfoss.listener.UnstarOperationListener;
 import org.vester.selfoss.model.FeedEntry;
 import org.vester.selfoss.operation.Operation;
 import org.vester.selfoss.operation.SelfossOperationFactory;
@@ -28,7 +27,7 @@ import android.webkit.WebView;
  * contained in a {@link ItemListActivity} in two-pane mode (on tablets) or a
  * {@link ItemDetailActivity} on handsets.
  */
-public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperationListener, StarOperationListener, UnstarOperationListener {
+public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperationListener, StarOperationListener {
 	/**
 	 * The fragment argument representing the item ID that this fragment
 	 * represents.
@@ -123,24 +122,23 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 			markAsUnreadThreads.submit(task);
 			break;
 		case R.id.star:
-			if (mItem.isStared()) {
-				task = new SelfossTask(SelfossOperationFactory.getInstance().createUnstarOperation(mItem.id, this), getActivity(), new ErrorCallback() {
+			task = new SelfossTask(SelfossOperationFactory.getInstance().createUnstarOperation(mItem.id, this), getActivity(), new ErrorCallback() {
 
-					@Override
-					public void errorOccured(String url, Operation operation, Exception e) {
+				@Override
+				public void errorOccured(String url, Operation operation, Exception e) {
 
-					}
-				});
+				}
+			});
+			markAsUnreadThreads.submit(task);
+			break;
+		case R.id.unstar:
+			task = new SelfossTask(SelfossOperationFactory.getInstance().createStarOperation(mItem.id, this), getActivity(), new ErrorCallback() {
 
-			} else {
-				task = new SelfossTask(SelfossOperationFactory.getInstance().createStarOperation(mItem.id, this), getActivity(), new ErrorCallback() {
+				@Override
+				public void errorOccured(String url, Operation operation, Exception e) {
 
-					@Override
-					public void errorOccured(String url, Operation operation, Exception e) {
-
-					}
-				});
-			}
+				}
+			});
 			markAsUnreadThreads.submit(task);
 			break;
 		default:
