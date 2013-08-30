@@ -12,7 +12,7 @@ import org.vester.selfoss.operation.SelfossOperationFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -80,8 +80,8 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 
 		// Show the content in a WebView.
 		if (mItem != null) {
-			((WebView) rootView.findViewById(R.id.item_detail)).loadData(
-					"<a href=\"" + mItem.link + "\" >" + TextUtils.htmlEncode(mItem.title) + "</a><br/><hr>" + TextUtils.htmlEncode(mItem.sourcetitle) + "<br/>" + mItem.content, "text/html", null);
+			((WebView) rootView.findViewById(R.id.item_detail)).loadData("<a style=\"font-size: 120%;text-decoration: none;\" href=\"" + mItem.link + "\" >" + Html.escapeHtml(mItem.title)
+					+ "</a><br/><hr>" + Html.escapeHtml(mItem.sourcetitle) + "<br/>" + mItem.content, "text/html", null);
 		}
 
 		return rootView;
