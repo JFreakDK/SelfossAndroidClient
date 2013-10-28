@@ -78,13 +78,10 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 		// Show the content in a WebView.
 		if (mItem != null) {
 			((WebView) rootView.findViewById(R.id.item_detail)).loadData(
-					"<a style=\"font-size: 120%;text-decoration: none;\" href=\"" 
-							+ mItem.link + "\" >"
+					"<a style=\"font-size: 120%;text-decoration: none;\" href=\"" + parseLink(mItem.link) + "\" >"
 							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.title))
 							+ "</a><br/><hr><span style=\"font-weight:bold\">"
-							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.sourcetitle)) 
-							+ "</span><br/>" 
-							+ mItem.content,
+							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.sourcetitle)) + "</span><br/>" + mItem.content,
 					"text/html", null);
 		} else {
 			// Switch to list activity
@@ -92,6 +89,10 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 		}
 
 		return rootView;
+	}
+
+	private String parseLink(String link) {
+		return link.replace("http://xkcd.com/", "http://m.xkcd.com/");
 	}
 
 	@Override
