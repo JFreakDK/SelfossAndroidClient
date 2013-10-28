@@ -73,27 +73,30 @@ public class SetupActivity extends Activity {
 		mUsernameView.setText(mUsername);
 
 		mPasswordView = (EditText) findViewById(R.id.password);
-		mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-				if (id == R.id.login || id == EditorInfo.IME_NULL) {
-					attemptLogin();
-					return true;
-				}
-				return false;
-			}
-		});
+		mPasswordView
+				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+					@Override
+					public boolean onEditorAction(TextView textView, int id,
+							KeyEvent keyEvent) {
+						if (id == R.id.login || id == EditorInfo.IME_NULL) {
+							attemptLogin();
+							return true;
+						}
+						return false;
+					}
+				});
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
 		mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
 
-		findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				attemptLogin();
-			}
-		});
+		findViewById(R.id.sign_in_button).setOnClickListener(
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						attemptLogin();
+					}
+				});
 	}
 
 	@Override
@@ -121,7 +124,7 @@ public class SetupActivity extends Activity {
 		// Store values at the time of the login attempt.
 		mUsername = mUsernameView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
-		mUrl = mUrlView.getText().toString();
+		mUrl = mUrlView.getText().toString().trim();
 
 		boolean cancel = false;
 		View focusView = null;
@@ -171,23 +174,30 @@ public class SetupActivity extends Activity {
 		// for very easy animations. If available, use these APIs to fade-in
 		// the progress spinner.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+			int shortAnimTime = getResources().getInteger(
+					android.R.integer.config_shortAnimTime);
 
 			mLoginStatusView.setVisibility(View.VISIBLE);
-			mLoginStatusView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-				}
-			});
+			mLoginStatusView.animate().setDuration(shortAnimTime)
+					.alpha(show ? 1 : 0)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							mLoginStatusView.setVisibility(show ? View.VISIBLE
+									: View.GONE);
+						}
+					});
 
 			mLoginFormView.setVisibility(View.VISIBLE);
-			mLoginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-				}
-			});
+			mLoginFormView.animate().setDuration(shortAnimTime)
+					.alpha(show ? 0 : 1)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							mLoginFormView.setVisibility(show ? View.GONE
+									: View.VISIBLE);
+						}
+					});
 		} else {
 			// The ViewPropertyAnimator APIs are not available, so simply show
 			// and hide the relevant UI components.
@@ -217,19 +227,26 @@ public class SetupActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			LoginTracker loginCallback = new LoginTracker();
-			LoginOperation operation = SelfossOperationFactory.getInstance().createLoginOperation(mUsername, mPassword, loginCallback);
-			new SelfossTask(operation, SetupActivity.this.getApplicationContext(), new ErrorCallback() {
+			LoginOperation operation = SelfossOperationFactory.getInstance()
+					.createLoginOperation(mUsername, mPassword, loginCallback);
+			new SelfossTask(operation,
+					SetupActivity.this.getApplicationContext(),
+					new ErrorCallback() {
 
-				@Override
-				public void errorOccured(String url, Operation operation, Exception e) {
-					Log.e(SetupActivity.class.getName(), "Error occured while executing: " + operation.getOperationTitle(), e);
-				}
-			}, mUrl).run();
+						@Override
+						public void errorOccured(String url,
+								Operation operation, Exception e) {
+							Log.e(SetupActivity.class.getName(),
+									"Error occured while executing: "
+											+ operation.getOperationTitle(), e);
+						}
+					}, mUrl).run();
 			if (!loginCallback.getLoginSucces()) {
 				return false;
 			}
 
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(getApplicationContext());
 			Editor prefsEditor = prefs.edit();
 			prefsEditor.putString(SettingsActivity.URL, mUrl);
 			prefsEditor.putString(SettingsActivity.USERNAME, mUsername);
@@ -245,10 +262,12 @@ public class SetupActivity extends Activity {
 
 			if (success) {
 				finish();
-				Intent newActivity = new Intent(getApplicationContext(), ItemListActivity.class);
+				Intent newActivity = new Intent(getApplicationContext(),
+						ItemListActivity.class);
 				startActivity(newActivity);
 			} else {
-				mPasswordView.setError(getString(R.string.error_incorrect_password));
+				mPasswordView
+						.setError(getString(R.string.error_incorrect_password));
 				mPasswordView.requestFocus();
 			}
 		}

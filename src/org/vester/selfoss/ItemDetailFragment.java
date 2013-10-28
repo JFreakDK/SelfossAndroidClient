@@ -3,6 +3,7 @@ package org.vester.selfoss;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.vester.selfoss.listener.MarkAsUnreadOperationListener;
 import org.vester.selfoss.listener.StarOperationListener;
 import org.vester.selfoss.model.FeedEntry;
@@ -12,7 +13,6 @@ import org.vester.selfoss.operation.SelfossOperationFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,14 +23,12 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 /**
- * A fragment representing a single Item detail screen. This fragment is either
- * contained in a {@link ItemListActivity} in two-pane mode (on tablets) or a
- * {@link ItemDetailActivity} on handsets.
+ * A fragment representing a single Item detail screen. This fragment is either contained in a {@link ItemListActivity} in two-pane mode (on tablets)
+ * or a {@link ItemDetailActivity} on handsets.
  */
 public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperationListener, StarOperationListener {
 	/**
-	 * The fragment argument representing the item ID that this fragment
-	 * represents.
+	 * The fragment argument representing the item ID that this fragment represents.
 	 */
 	public static final String ARG_ITEM_ID = "item_id";
 
@@ -44,8 +42,7 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 	private Handler guiThread;
 
 	/**
-	 * Mandatory empty constructor for the fragment manager to instantiate the
-	 * fragment (e.g. upon screen orientation changes).
+	 * Mandatory empty constructor for the fragment manager to instantiate the fragment (e.g. upon screen orientation changes).
 	 */
 	public ItemDetailFragment() {
 	}
@@ -80,8 +77,18 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 
 		// Show the content in a WebView.
 		if (mItem != null) {
-			((WebView) rootView.findViewById(R.id.item_detail)).loadData("<a style=\"font-size: 120%;text-decoration: none;\" href=\"" + mItem.link + "\" >" + Html.escapeHtml(mItem.title)
-					+ "</a><br/><hr>" + Html.escapeHtml(mItem.sourcetitle) + "<br/>" + mItem.content, "text/html", null);
+			((WebView) rootView.findViewById(R.id.item_detail)).loadData(
+					"<a style=\"font-size: 120%;text-decoration: none;\" href=\"" 
+							+ mItem.link + "\" >"
+							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.title))
+							+ "</a><br/><hr><span style=\"font-weight:bold\">"
+							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.sourcetitle)) 
+							+ "</span><br/>" 
+							+ mItem.content,
+					"text/html", null);
+		} else {
+			// Switch to list activity
+			getActivity().finish();
 		}
 
 		return rootView;
@@ -112,13 +119,14 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.keep_unread:
-			SelfossTask task = new SelfossTask(SelfossOperationFactory.getInstance().createMarkAsUnreadOperation(mItem.id, this), getActivity(), new ErrorCallback() {
+			SelfossTask task = new SelfossTask(SelfossOperationFactory.getInstance().createMarkAsUnreadOperation(mItem.id, this), getActivity(),
+					new ErrorCallback() {
 
-				@Override
-				public void errorOccured(String url, Operation operation, Exception e) {
+						@Override
+						public void errorOccured(String url, Operation operation, Exception e) {
 
-				}
-			});
+						}
+					});
 			markAsUnreadThreads.submit(task);
 			break;
 		case R.id.star:
