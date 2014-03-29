@@ -18,4 +18,5 @@
     <string name="unstar_item">Unstar item</string>
     <string name="mark_item_as_read">Mark item as read</string>
     <string name="login">login</string>
+    <string name="share">Share</string>
 </resources>

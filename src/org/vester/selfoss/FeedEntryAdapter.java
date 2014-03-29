@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import org.vester.selfoss.ItemListFragment.FeedEntryHolder;
+import org.vester.selfoss.FeedEntryRowFragment.FeedEntryHolder;
 import org.vester.selfoss.icons.IconLoader;
 import org.vester.selfoss.model.FeedEntry;
 import org.vester.selfoss.operation.Operation;
@@ -82,9 +82,9 @@ final class FeedEntryAdapter extends ArrayAdapter<FeedEntry> {
 
 			if (row == null || row.getTag() instanceof LoadingFeedEntryHolder) {
 				LayoutInflater inflater = ((FragmentActivity) getContext()).getLayoutInflater();
-				row = inflater.inflate(R.layout.list_view_item_row, parent, false);
+				row = inflater.inflate(R.layout.feed_entry_row, parent, false);
 
-				holder = new ItemListFragment.FeedEntryHolder();
+				holder = new FeedEntryRowFragment.FeedEntryHolder();
 				holder.imgIcon = (ImageView) row.findViewById(R.id.imgIcon);
 				holder.txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 				holder.txtSource = (TextView) row.findViewById(R.id.txtSource);
@@ -93,7 +93,7 @@ final class FeedEntryAdapter extends ArrayAdapter<FeedEntry> {
 				holder = (FeedEntryHolder) row.getTag();
 			}
 
-			final FeedEntry entry = ItemListFragment.items.get(position);
+			final FeedEntry entry = FeedEntryRowFragment.items.get(position);
 			if (!entry.unread) {
 				holder.txtTitle.setTypeface(null);
 				row.setBackgroundColor(Color.LTGRAY);
@@ -103,13 +103,13 @@ final class FeedEntryAdapter extends ArrayAdapter<FeedEntry> {
 			}
 			if (entry.icon.length() > 0) {
 				if (entry.sourcetitle.trim().equals("Planet Android")) {
-					Log.d(ItemListFragment.class.getName(), "Now loading for Planet Android: " + entry.icon);
+					Log.d(FeedEntryRowFragment.class.getName(), "Now loading for Planet Android: " + entry.icon);
 				}
 				Bitmap bitmap = IconLoader.getBitmap(url, entry.icon, getContext());
 				if (bitmap != null) {
 					holder.imgIcon.setImageBitmap(bitmap);
 				} else {
-					Log.d(ItemListFragment.class.getName(), entry.icon + " is not in the cache. (" + entry.sourcetitle + ")");
+					Log.d(FeedEntryRowFragment.class.getName(), entry.icon + " is not in the cache. (" + entry.sourcetitle + ")");
 					holder.imgIcon.setImageBitmap(null);
 					if (!loadingIconSet.contains(entry.icon)) {
 						loadingIconSet.add(entry.icon);

@@ -1,6 +1,7 @@
 package org.vester.selfoss;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -8,14 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 /**
- * An activity representing a single Item detail screen. This activity is only
- * used on handset devices. On tablet-size devices, item details are presented
- * side-by-side with a list of items in a {@link ItemListActivity}.
+ * An activity representing a single Item detail screen. This activity is only used on handset devices. On tablet-size devices, item details are
+ * presented side-by-side with a list of items in a {@link FeedEntryMainActivity}.
  * <p>
- * This activity is mostly just a 'shell' activity containing nothing more than
- * a {@link ItemDetailFragment}.
+ * This activity is mostly just a 'shell' activity containing nothing more than a {@link FeedEntryContentFragment}.
  */
-public class ItemDetailActivity extends FragmentActivity {
+public class FeedEntryContentActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +37,17 @@ public class ItemDetailActivity extends FragmentActivity {
 			// Create the detail fragment and add it to the activity
 			// using a fragment transaction.
 			Bundle arguments = new Bundle();
-			arguments.putString(ItemDetailFragment.ARG_ITEM_ID, getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
-			ItemDetailFragment fragment = new ItemDetailFragment();
+			arguments.putString(FeedEntryContentFragment.ARG_ITEM_ID, getIntent().getStringExtra(FeedEntryContentFragment.ARG_ITEM_ID));
+			FeedEntryContentFragment fragment = new FeedEntryContentFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction().add(R.id.item_detail_container, fragment).commit();
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		System.out.println("ItemDetailActivity.onConfigurationChanged()");
 	}
 
 	@Override
@@ -56,7 +61,7 @@ public class ItemDetailActivity extends FragmentActivity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpTo(this, new Intent(this, ItemListActivity.class));
+			NavUtils.navigateUpTo(this, new Intent(this, FeedEntryMainActivity.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

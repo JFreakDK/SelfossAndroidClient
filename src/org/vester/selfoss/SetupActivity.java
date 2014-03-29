@@ -63,7 +63,7 @@ public class SetupActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_setup);
+		setContentView(R.layout.initial_login_activity);
 
 		// Set up the login form.
 
@@ -263,7 +263,7 @@ public class SetupActivity extends Activity {
 			if (success) {
 				finish();
 				Intent newActivity = new Intent(getApplicationContext(),
-						ItemListActivity.class);
+						FeedEntryMainActivity.class);
 				startActivity(newActivity);
 			} else {
 				mPasswordView

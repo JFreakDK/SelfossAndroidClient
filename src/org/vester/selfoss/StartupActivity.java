@@ -6,13 +6,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-public class Startup extends Activity {
+public class StartupActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		final Class<? extends Activity> activityClass;
 		if (clientIsConfigured())
-			activityClass = ItemListActivity.class;
+			activityClass = FeedEntryMainActivity.class;
 		else
 			activityClass = SetupActivity.class;
 

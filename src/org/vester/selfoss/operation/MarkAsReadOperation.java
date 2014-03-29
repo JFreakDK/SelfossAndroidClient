@@ -13,17 +13,17 @@ import java.util.Collections;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.vester.selfoss.ItemListActivity;
+import org.vester.selfoss.FeedEntryMainActivity;
 import org.vester.selfoss.R;
 
 public class MarkAsReadOperation implements Operation {
 
 	private String url;
 	private final String id;
-	private final ItemListActivity itemListActivity;
+	private final FeedEntryMainActivity itemListActivity;
 	private String login;
 
-	protected MarkAsReadOperation(String id, ItemListActivity itemListActivity) {
+	protected MarkAsReadOperation(String id, FeedEntryMainActivity itemListActivity) {
 		this.id = id;
 		this.itemListActivity = itemListActivity;
 	}

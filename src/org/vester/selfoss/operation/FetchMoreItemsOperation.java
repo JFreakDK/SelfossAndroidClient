@@ -3,13 +3,13 @@ package org.vester.selfoss.operation;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.vester.selfoss.ItemListActivity;
+import org.vester.selfoss.FeedEntryMainActivity;
 import org.vester.selfoss.R;
 
 public class FetchMoreItemsOperation extends FetchItemsOperation {
 	private final int totalItemCount;
 
-	protected FetchMoreItemsOperation(ItemListActivity itemListActivity, int totalItemCount) {
+	protected FetchMoreItemsOperation(FeedEntryMainActivity itemListActivity, int totalItemCount) {
 		super(itemListActivity);
 		this.totalItemCount = totalItemCount;
 	}

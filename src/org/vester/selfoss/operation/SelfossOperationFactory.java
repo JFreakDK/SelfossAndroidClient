@@ -2,7 +2,7 @@ package org.vester.selfoss.operation;
 
 import java.util.Collection;
 
-import org.vester.selfoss.ItemListActivity;
+import org.vester.selfoss.FeedEntryMainActivity;
 import org.vester.selfoss.SetupActivity.LoginCallback;
 import org.vester.selfoss.listener.MarkAsUnreadOperationListener;
 import org.vester.selfoss.listener.StarOperationListener;
@@ -20,12 +20,12 @@ public class SelfossOperationFactory implements OperationFactory {
 	}
 
 	@Override
-	public MarkAsReadOperation createMarkAsReadOperation(String id, ItemListActivity itemListActivity) {
+	public MarkAsReadOperation createMarkAsReadOperation(String id, FeedEntryMainActivity itemListActivity) {
 		return new MarkAsReadOperation(id, itemListActivity);
 	}
 
 	@Override
-	public MarkAllAsReadOperation createMarkAllAsReadOperation(Collection<String> ids, ItemListActivity itemListActivity) {
+	public MarkAllAsReadOperation createMarkAllAsReadOperation(Collection<String> ids, FeedEntryMainActivity itemListActivity) {
 		return new MarkAllAsReadOperation(ids, itemListActivity);
 	}
 
@@ -35,12 +35,12 @@ public class SelfossOperationFactory implements OperationFactory {
 	}
 
 	@Override
-	public FetchMoreItemsOperation createFetchMoreItemsOperation(ItemListActivity itemListActivity, int totalItemCount) {
+	public FetchMoreItemsOperation createFetchMoreItemsOperation(FeedEntryMainActivity itemListActivity, int totalItemCount) {
 		return new FetchMoreItemsOperation(itemListActivity, totalItemCount);
 	}
 
 	@Override
-	public FetchItemsOperation createFetchItemsOperation(ItemListActivity itemListActivity) {
+	public FetchItemsOperation createFetchItemsOperation(FeedEntryMainActivity itemListActivity) {
 		return new FetchItemsOperation(itemListActivity);
 	}
 

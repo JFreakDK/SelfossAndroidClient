@@ -13,6 +13,7 @@ import org.vester.selfoss.operation.SelfossOperationFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,10 +24,10 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 /**
- * A fragment representing a single Item detail screen. This fragment is either contained in a {@link ItemListActivity} in two-pane mode (on tablets)
- * or a {@link ItemDetailActivity} on handsets.
+ * A fragment representing a single Item detail screen. This fragment is either contained in a {@link FeedEntryMainActivity} in two-pane mode (on tablets)
+ * or a {@link FeedEntryContentActivity} on handsets.
  */
-public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperationListener, StarOperationListener {
+public class FeedEntryContentFragment extends Fragment implements MarkAsUnreadOperationListener, StarOperationListener {
 	/**
 	 * The fragment argument representing the item ID that this fragment represents.
 	 */
@@ -44,7 +45,7 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the fragment (e.g. upon screen orientation changes).
 	 */
-	public ItemDetailFragment() {
+	public FeedEntryContentFragment() {
 	}
 
 	@Override
@@ -55,8 +56,8 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 			// arguments. In a real-world scenario, use a Loader
 			// to load content from a content provider.
 			String id = getArguments().getString(ARG_ITEM_ID);
-			if (org.vester.selfoss.ItemListFragment.items != null) {
-				for (FeedEntry feedEntry : org.vester.selfoss.ItemListFragment.items) {
+			if (org.vester.selfoss.FeedEntryRowFragment.items != null) {
+				for (FeedEntry feedEntry : org.vester.selfoss.FeedEntryRowFragment.items) {
 					if (feedEntry.id.equals(id)) {
 						mItem = feedEntry;
 						break;
@@ -73,22 +74,32 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_item_detail, container, false);
+		View rootView = inflater.inflate(R.layout.feed_entry_content, container, false);
 
 		// Show the content in a WebView.
 		if (mItem != null) {
-			((WebView) rootView.findViewById(R.id.item_detail)).loadData(
-					"<a style=\"font-size: 120%;text-decoration: none;\" href=\"" + parseLink(mItem.link) + "\" >"
-							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.title))
-							+ "</a><br/><hr><span style=\"font-weight:bold\">"
-							+ StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.sourcetitle)) + "</span><br/>" + mItem.content,
-					"text/html", null);
+			String title = StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.title));
+			String sourceTitle = StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(mItem.sourcetitle));
+			String content;
+			if (needsEscaping(mItem.content)) {
+				content = StringEscapeUtils.escapeHtml4(mItem.content);
+			} else {
+				content = mItem.content;
+			}
+			((WebView) rootView.findViewById(R.id.item_detail)).loadData("<html><head><title>" + title
+					+ "</title></head><body><a style=\"font-size: 120%;text-decoration: none;\" href=\"" + parseLink(mItem.link) + "\" >" + title
+					+ "</a><br/><hr><span style=\"font-weight:bold\">" + sourceTitle + "</span><br/>" + content + "</body></html>", "text/html",
+					"UTF-8");
 		} else {
 			// Switch to list activity
 			getActivity().finish();
 		}
 
 		return rootView;
+	}
+
+	private boolean needsEscaping(String content) {
+		return Html.fromHtml(content).equals(content);
 	}
 
 	private String parseLink(String link) {
@@ -158,19 +169,19 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 
 	@Override
 	public void markedAsUnread(final String id) {
-		for (FeedEntry feedEntry : org.vester.selfoss.ItemListFragment.items) {
+		for (FeedEntry feedEntry : org.vester.selfoss.FeedEntryRowFragment.items) {
 			if (feedEntry.id.equals(id)) {
 				feedEntry.unread = true;
 			}
 		}
-		ItemListFragment itemListFragment = (ItemListFragment) getFragmentManager().findFragmentById(R.id.item_list);
+		FeedEntryRowFragment itemListFragment = (FeedEntryRowFragment) getFragmentManager().findFragmentById(R.id.item_list);
 		itemListFragment.getAdapter().notifyDataSetChanged();
 
 	}
 
 	@Override
 	public void starred(final String id) {
-		Log.i(ItemDetailFragment.class.getName(), "Starred the feed entry: " + id);
+		Log.i(FeedEntryContentFragment.class.getName(), "Starred the feed entry: " + id);
 		if (mItem.id.equals(id)) {
 			mItem.setStarred(true);
 			guiThread.post(new Runnable() {
@@ -186,7 +197,7 @@ public class ItemDetailFragment extends Fragment implements MarkAsUnreadOperatio
 	@Override
 	public void unstarred(String id) {
 
-		Log.i(ItemDetailFragment.class.getName(), "Unstarred the feed entry: " + id);
+		Log.i(FeedEntryContentFragment.class.getName(), "Unstarred the feed entry: " + id);
 		if (mItem.id.equals(id)) {
 			mItem.setStarred(false);
 			guiThread.post(new Runnable() {

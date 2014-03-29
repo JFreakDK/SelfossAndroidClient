@@ -17,19 +17,20 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.vester.selfoss.ItemListActivity"
+            android:name="org.vester.selfoss.FeedEntryMainActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="org.vester.selfoss.ItemDetailActivity"
+            android:name="org.vester.selfoss.FeedEntryContentActivity"
             android:label="@string/title_item_detail"
-            android:parentActivityName=".ItemListActivity" >
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".FeedEntryMainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ItemListActivity" />
         </activity>
         <activity
-            android:name="org.vester.selfoss.Startup"
+            android:name="org.vester.selfoss.StartupActivity"
             android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +40,7 @@
         <activity
             android:name="org.vester.selfoss.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="org.vester.selfoss.ItemListActivity" >
+            android:parentActivityName="org.vester.selfoss.FeedEntryMainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.vester.selfoss.ItemListActivity" />

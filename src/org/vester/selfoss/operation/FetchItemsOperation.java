@@ -10,7 +10,7 @@ import java.net.URL;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.vester.selfoss.ItemListActivity;
+import org.vester.selfoss.FeedEntryMainActivity;
 import org.vester.selfoss.R;
 import org.vester.selfoss.SettingsActivity;
 
@@ -21,12 +21,12 @@ public class FetchItemsOperation implements Operation {
 	/**
 	 * 
 	 */
-	private final ItemListActivity itemListActivity;
+	private final FeedEntryMainActivity itemListActivity;
 	protected String stringURL;
 	private final String condition;
 	private String login;
 
-	public FetchItemsOperation(ItemListActivity itemListActivity) {
+	public FetchItemsOperation(FeedEntryMainActivity itemListActivity) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemListActivity);
 		this.condition = prefs.getString(SettingsActivity.TYPE, SettingsActivity.TYPE_DEFAULT);
 		this.itemListActivity = itemListActivity;

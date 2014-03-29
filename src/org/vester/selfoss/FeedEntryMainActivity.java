@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,30 +31,25 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
- * An activity representing a list of Items. This activity has different
- * presentations for handset and tablet-size devices. On handsets, the activity
- * presents a list of items, which when touched, lead to a
- * {@link ItemDetailActivity} representing item details. On tablets, the
- * activity presents the list of items and item details side-by-side using two
- * vertical panes.
+ * An activity representing a list of Items. This activity has different presentations for handset and tablet-size devices. On handsets, the activity
+ * presents a list of items, which when touched, lead to a {@link FeedEntryContentActivity} representing item details. On tablets, the activity presents the
+ * list of items and item details side-by-side using two vertical panes.
  * <p>
- * The activity makes heavy use of fragments. The list of items is a
- * {@link ItemListFragment} and the item details (if present) is a
- * {@link ItemDetailFragment}.
+ * The activity makes heavy use of fragments. The list of items is a {@link FeedEntryRowFragment} and the item details (if present) is a
+ * {@link FeedEntryContentFragment}.
  * <p>
- * This activity also implements the required {@link ItemListFragment.Callbacks}
- * interface to listen for item selections.
+ * This activity also implements the required {@link FeedEntryRowFragment.Callbacks} interface to listen for item selections.
  */
-public class ItemListActivity extends FragmentActivity implements ItemListFragment.Callbacks, OnScrollListener, ErrorCallback {
+public class FeedEntryMainActivity extends FragmentActivity implements FeedEntryRowFragment.Callbacks, OnScrollListener, ErrorCallback {
 
 	private static final int UNREAD = R.string.unread;
 	private static final int ALL_ITEMS = R.string.all_items;
 	/**
-	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-	 * device.
+	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
 	 */
 	private boolean mTwoPane;
 	private ExecutorService fetchThread;
@@ -66,14 +62,16 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 	private Future<?> updatePending;
 	private Future<?> markAllAsReadPending;
 	private Future<?> fetchMoreItemsPending;
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		operationFactory = SelfossOperationFactory.getInstance();
-		setContentView(R.layout.activity_item_list);
+		setContentView(R.layout.feed_entry_list);
 		initThreading();
-		ItemListFragment itemListFragment = (ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list);
+		FeedEntryRowFragment itemListFragment = (FeedEntryRowFragment) getSupportFragmentManager().findFragmentById(R.id.item_list);
 		itemListFragment.getListView().setOnScrollListener(this);
 		if (findViewById(R.id.item_detail_container) != null) {
 			// The detail container view will be present only in the
@@ -85,9 +83,21 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			// In two-pane mode, list items should be given the
 			// 'activated' state when touched.
 			itemListFragment.setActivateOnItemClick(true);
+		} else {
+			mTwoPane = false;
 		}
-		if (ItemListFragment.items.isEmpty())
+		if (FeedEntryRowFragment.items.isEmpty())
 			guiThread.post(updateTask);
+		// mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		// mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		//
+		// String[] mPlanetTitles = new String[] { "Mojn", "Hej" };
+		// // Set the adapter for the list view
+		// mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.simple, mPlanetTitles));
+		//
+		// // Set the list's click listener
+		// mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
 	}
 
 	@Override
@@ -119,7 +129,8 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			return true;
 		case R.id.mark_all_as_read:
 			if (markAllAsReadPending == null || markAllAsReadPending.isDone()) {
-				markAllAsReadPending = markAsReadThread.submit(new SelfossTask(operationFactory.createMarkAllAsReadOperation(filter(ItemListFragment.items), this), this, this));
+				markAllAsReadPending = markAsReadThread.submit(new SelfossTask(operationFactory.createMarkAllAsReadOperation(
+						filter(FeedEntryRowFragment.items), this), this, this));
 				guiThread.post(updateTask);
 			}
 			break;
@@ -150,7 +161,7 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 		if (item.getTitle().equals(getString(ALL_ITEMS))) {
 			type = SettingsActivity.TYPE_UNREAD;
 		} else {
-			Log.i(ItemListActivity.class.getName(), "Unhandled title detected");
+			Log.i(FeedEntryMainActivity.class.getName(), "Unhandled title detected");
 		}
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor editor = prefs.edit();
@@ -159,8 +170,7 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 	}
 
 	/**
-	 * Callback method from {@link ItemListFragment.Callbacks} indicating that
-	 * the item with the given ID was selected.
+	 * Callback method from {@link FeedEntryRowFragment.Callbacks} indicating that the item with the given ID was selected.
 	 */
 	@Override
 	public void onItemSelected(final String id) {
@@ -169,16 +179,16 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			// adding or replacing the detail fragment using a
 			// fragment transaction.
 			Bundle arguments = new Bundle();
-			arguments.putString(ItemDetailFragment.ARG_ITEM_ID, id);
-			ItemDetailFragment fragment = new ItemDetailFragment();
+			arguments.putString(FeedEntryContentFragment.ARG_ITEM_ID, id);
+			FeedEntryContentFragment fragment = new FeedEntryContentFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction().replace(R.id.item_detail_container, fragment).commit();
 
 		} else {
 			// In single-pane mode, simply start the detail activity
 			// for the selected item ID.
-			Intent detailIntent = new Intent(this, ItemDetailActivity.class);
-			detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_ID, id);
+			Intent detailIntent = new Intent(this, FeedEntryContentActivity.class);
+			detailIntent.putExtra(FeedEntryContentFragment.ARG_ITEM_ID, id);
 			startActivity(detailIntent);
 		}
 		guiThread.post(new Runnable() {
@@ -186,10 +196,11 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			@Override
 			public void run() {
 				try {
-					SelfossTask task = new SelfossTask(operationFactory.createMarkAsReadOperation(id, ItemListActivity.this), ItemListActivity.this, ItemListActivity.this);
+					SelfossTask task = new SelfossTask(operationFactory.createMarkAsReadOperation(id, FeedEntryMainActivity.this), FeedEntryMainActivity.this,
+							FeedEntryMainActivity.this);
 					fetchThread.submit(task);
 				} catch (RejectedExecutionException e) {
-					Log.e(ItemListActivity.class.getName(), "RejectedExecutionException occured");
+					Log.e(FeedEntryMainActivity.class.getName(), "RejectedExecutionException occured");
 				}
 			}
 		});
@@ -206,13 +217,14 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			public void run() {
 				try {
 					if (updatePending == null || updatePending.isDone()) {
-						ItemListFragment itemListFragment = (ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list);
+						FeedEntryRowFragment itemListFragment = (FeedEntryRowFragment) getSupportFragmentManager().findFragmentById(R.id.item_list);
 						FeedEntryAdapter adapter = (FeedEntryAdapter) itemListFragment.getAdapter();
-						SelfossTask task = new SelfossTask(operationFactory.createFetchItemsOperation(ItemListActivity.this), ItemListActivity.this, ItemListActivity.this, adapter);
+						SelfossTask task = new SelfossTask(operationFactory.createFetchItemsOperation(FeedEntryMainActivity.this), FeedEntryMainActivity.this,
+								FeedEntryMainActivity.this, adapter);
 						updatePending = fetchThread.submit(task);
 					}
 				} catch (RejectedExecutionException e) {
-					Log.e(ItemListActivity.class.getName(), "RejectedExecutionException occured");
+					Log.e(FeedEntryMainActivity.class.getName(), "RejectedExecutionException occured");
 				}
 
 			}
@@ -225,12 +237,12 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			@Override
 			public void run() {
 				if (!append) {
-					ItemListFragment.items.clear();
+					FeedEntryRowFragment.items.clear();
 				}
 				for (int i = 0; i < json.length(); i++) {
 					try {
 						JSONObject jsonObject = (JSONObject) json.get(i);
-						ItemListFragment.items.add(new FeedEntry(jsonObject));
+						FeedEntryRowFragment.items.add(new FeedEntry(jsonObject));
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -245,13 +257,13 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 			@Override
 			public void run() {
 				for (String id : ids) {
-					for (FeedEntry entry : ItemListFragment.items) {
+					for (FeedEntry entry : FeedEntryRowFragment.items) {
 						if (entry.id.equals(id)) {
 							entry.unread = false;
 						}
 					}
 				}
-				ArrayAdapter<FeedEntry> adapter = ((ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list)).getAdapter();
+				ArrayAdapter<FeedEntry> adapter = ((FeedEntryRowFragment) getSupportFragmentManager().findFragmentById(R.id.item_list)).getAdapter();
 				adapter.notifyDataSetChanged();
 			}
 		});
@@ -267,15 +279,17 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 				final int lastItem = firstVisibleItem + visibleItemCount;
 				if (lastItem == totalItemCount) {
 					// Last item is fully visible.
-					Log.d(ItemListActivity.class.getName(), "Scrolled to the end of the list.");
+					Log.d(FeedEntryMainActivity.class.getName(), "Scrolled to the end of the list.");
 					guiThread.post(new Runnable() {
 
 						@Override
 						public void run() {
 							if (fetchMoreItemsPending == null || fetchMoreItemsPending.isDone()) {
-								FeedEntryAdapter adapter = (FeedEntryAdapter) ((ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list)).getAdapter();
-								Operation executor = operationFactory.createFetchMoreItemsOperation(ItemListActivity.this, totalItemCount);
-								fetchMoreItemsPending = fetchThread.submit(new SelfossTask(executor, ItemListActivity.this, ItemListActivity.this, adapter));
+								FeedEntryAdapter adapter = (FeedEntryAdapter) ((FeedEntryRowFragment) getSupportFragmentManager().findFragmentById(
+										R.id.item_list)).getAdapter();
+								Operation executor = operationFactory.createFetchMoreItemsOperation(FeedEntryMainActivity.this, totalItemCount);
+								fetchMoreItemsPending = fetchThread.submit(new SelfossTask(executor, FeedEntryMainActivity.this, FeedEntryMainActivity.this,
+										adapter));
 							}
 						}
 					});
@@ -295,14 +309,15 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 
 			@Override
 			public void run() {
-				Toast.makeText(ItemListActivity.this, "Failed while executing operation: " + getString(operation.getOperationTitle()) + ", on " + url, Toast.LENGTH_LONG).show();
+				Toast.makeText(FeedEntryMainActivity.this,
+						"Failed while executing operation: " + getString(operation.getOperationTitle()) + ", on " + url, Toast.LENGTH_LONG).show();
 			}
 		});
 	}
 
 	@Override
 	public void onBackPressed() {
-		Log.i(ItemListActivity.class.getName(), "Finishing");
+		Log.i(FeedEntryMainActivity.class.getName(), "Finishing");
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_HOME);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -310,6 +325,6 @@ public class ItemListActivity extends FragmentActivity implements ItemListFragme
 	}
 
 	public void starred(String id) {
-		Log.i(ItemListActivity.class.getName(), "Item starred: " + id);
+		Log.i(FeedEntryMainActivity.class.getName(), "Item starred: " + id);
 	}
 }

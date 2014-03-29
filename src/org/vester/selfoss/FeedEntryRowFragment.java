@@ -24,12 +24,12 @@ import android.widget.TextView;
  * A list fragment representing a list of Items. This fragment also supports
  * tablet devices by allowing list items to be given an 'activated' state upon
  * selection. This helps indicate which item is currently being viewed in a
- * {@link ItemDetailFragment}.
+ * {@link FeedEntryContentFragment}.
  * <p>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ItemListFragment extends ListFragment {
+public class FeedEntryRowFragment extends ListFragment {
 
 	static class FeedEntryHolder {
 
@@ -37,7 +37,6 @@ public class ItemListFragment extends ListFragment {
 		protected TextView txtTitle;
 		protected TextView txtSource;
 		protected ProgressBar progressBar;
-
 	}
 
 	/**
@@ -94,7 +93,7 @@ public class ItemListFragment extends ListFragment {
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public ItemListFragment() {
+	public FeedEntryRowFragment() {
 	}
 
 	@Override
