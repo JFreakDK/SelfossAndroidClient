@@ -19,25 +19,31 @@ import org.vester.selfoss.operation.SelfossOperationFactory;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 /**
  * An activity representing a list of Items. This activity has different presentations for handset and tablet-size devices. On handsets, the activity
- * presents a list of items, which when touched, lead to a {@link FeedEntryContentActivity} representing item details. On tablets, the activity presents the
- * list of items and item details side-by-side using two vertical panes.
+ * presents a list of items, which when touched, lead to a {@link FeedEntryContentActivity} representing item details. On tablets, the activity
+ * presents the list of items and item details side-by-side using two vertical panes.
  * <p>
  * The activity makes heavy use of fragments. The list of items is a {@link FeedEntryRowFragment} and the item details (if present) is a
  * {@link FeedEntryContentFragment}.
@@ -46,8 +52,6 @@ import android.widget.Toast;
  */
 public class FeedEntryMainActivity extends FragmentActivity implements FeedEntryRowFragment.Callbacks, OnScrollListener, ErrorCallback {
 
-	private static final int UNREAD = R.string.unread;
-	private static final int ALL_ITEMS = R.string.all_items;
 	/**
 	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
 	 */
@@ -64,6 +68,13 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 	private Future<?> fetchMoreItemsPending;
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
+	private ActionBarDrawerToggle mDrawerToggle;
+	private String[] options;
+
+	private String[] apiOption = new String[] { "", SettingsActivity.TYPE_UNREAD, SettingsActivity.TYPE_STARRED };
+
+	private String mDrawerTitle = "Navigation";
+	private CharSequence mTitle = "Selfoss";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,15 +99,29 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 		}
 		if (FeedEntryRowFragment.items.isEmpty())
 			guiThread.post(updateTask);
-		// mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		// mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		//
-		// String[] mPlanetTitles = new String[] { "Mojn", "Hej" };
-		// // Set the adapter for the list view
-		// mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.simple, mPlanetTitles));
-		//
-		// // Set the list's click listener
-		// mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+		Resources res = getResources();
+		options = res.getStringArray(R.array.options_array);
+		// Set the adapter for the list view
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.navigation_drawer_row, options));
+		updateDrawerList();
+
+		// Set the list's click listener
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+		mDrawerLayout, /* DrawerLayout object */
+		R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+		R.string.drawer_open, /* "open drawer" description */
+		R.string.drawer_close /* "close drawer" description */
+		);
+
+		// Set the drawer toggle as the DrawerListener
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
 
 	}
 
@@ -105,24 +130,30 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
-		MenuItem typeMenuItem = menu.findItem(R.id.type);
-		updateTypeMenuItem(typeMenuItem);
 		return true;
 	}
 
-	private void updateTypeMenuItem(MenuItem typeMenuItem) {
+	private void updateDrawerList() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String type = prefs.getString(SettingsActivity.TYPE, SettingsActivity.TYPE_DEFAULT);
 
-		if (type.equals(SettingsActivity.TYPE_DEFAULT)) {
-			typeMenuItem.setTitle(getString(ALL_ITEMS));
-		} else if (type.equals(SettingsActivity.TYPE_UNREAD)) {
-			typeMenuItem.setTitle(getString(UNREAD));
+		for (int i = 0; i < apiOption.length; i++) {
+			String option = apiOption[i];
+			if (option.equals(type)) {
+				mDrawerList.setItemChecked(i, true);
+				setTitle(options[i]);
+			}
 		}
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// Pass the event to ActionBarDrawerToggle, if it returns
+		// true, then it has handled the app icon touch event
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+
 		switch (item.getItemId()) {
 		case R.id.settings:
 			startActivity(new Intent(this, SettingsActivity.class));
@@ -134,9 +165,6 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 				guiThread.post(updateTask);
 			}
 			break;
-		case R.id.type:
-			updatePreference(item);
-			updateTypeMenuItem(item);
 		case R.id.refresh:
 			guiThread.post(updateTask);
 			break;
@@ -154,19 +182,6 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 			}
 		}
 		return ids;
-	}
-
-	private void updatePreference(MenuItem item) {
-		String type = SettingsActivity.TYPE_DEFAULT;
-		if (item.getTitle().equals(getString(ALL_ITEMS))) {
-			type = SettingsActivity.TYPE_UNREAD;
-		} else {
-			Log.i(FeedEntryMainActivity.class.getName(), "Unhandled title detected");
-		}
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		Editor editor = prefs.edit();
-		editor.putString(SettingsActivity.TYPE, type);
-		editor.apply();
 	}
 
 	/**
@@ -196,8 +211,8 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 			@Override
 			public void run() {
 				try {
-					SelfossTask task = new SelfossTask(operationFactory.createMarkAsReadOperation(id, FeedEntryMainActivity.this), FeedEntryMainActivity.this,
-							FeedEntryMainActivity.this);
+					SelfossTask task = new SelfossTask(operationFactory.createMarkAsReadOperation(id, FeedEntryMainActivity.this),
+							FeedEntryMainActivity.this, FeedEntryMainActivity.this);
 					fetchThread.submit(task);
 				} catch (RejectedExecutionException e) {
 					Log.e(FeedEntryMainActivity.class.getName(), "RejectedExecutionException occured");
@@ -219,8 +234,8 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 					if (updatePending == null || updatePending.isDone()) {
 						FeedEntryRowFragment itemListFragment = (FeedEntryRowFragment) getSupportFragmentManager().findFragmentById(R.id.item_list);
 						FeedEntryAdapter adapter = (FeedEntryAdapter) itemListFragment.getAdapter();
-						SelfossTask task = new SelfossTask(operationFactory.createFetchItemsOperation(FeedEntryMainActivity.this), FeedEntryMainActivity.this,
-								FeedEntryMainActivity.this, adapter);
+						SelfossTask task = new SelfossTask(operationFactory.createFetchItemsOperation(FeedEntryMainActivity.this),
+								FeedEntryMainActivity.this, FeedEntryMainActivity.this, adapter);
 						updatePending = fetchThread.submit(task);
 					}
 				} catch (RejectedExecutionException e) {
@@ -288,8 +303,8 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 								FeedEntryAdapter adapter = (FeedEntryAdapter) ((FeedEntryRowFragment) getSupportFragmentManager().findFragmentById(
 										R.id.item_list)).getAdapter();
 								Operation executor = operationFactory.createFetchMoreItemsOperation(FeedEntryMainActivity.this, totalItemCount);
-								fetchMoreItemsPending = fetchThread.submit(new SelfossTask(executor, FeedEntryMainActivity.this, FeedEntryMainActivity.this,
-										adapter));
+								fetchMoreItemsPending = fetchThread.submit(new SelfossTask(executor, FeedEntryMainActivity.this,
+										FeedEntryMainActivity.this, adapter));
 							}
 						}
 					});
@@ -324,7 +339,45 @@ public class FeedEntryMainActivity extends FragmentActivity implements FeedEntry
 		startActivity(intent);
 	}
 
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
 	public void starred(String id) {
 		Log.i(FeedEntryMainActivity.class.getName(), "Item starred: " + id);
 	}
+
+	private class DrawerItemClickListener implements OnItemClickListener {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			// Highlight the selected item, update the title, and close the drawer
+			mDrawerList.setItemChecked(position, true);
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(FeedEntryMainActivity.this);
+			Editor editor = prefs.edit();
+			editor.putString(SettingsActivity.TYPE, apiOption[position]);
+			editor.apply();
+
+			setTitle(options[position]);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			guiThread.post(updateTask);
+		}
+
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {
+		mTitle = title;
+		getActionBar().setTitle(mTitle);
+	}
+
 }

@@ -21,7 +21,7 @@ public class FeedEntry {
 	public FeedEntry(JSONObject jsonObject) {
 		try {
 			id = jsonObject.getString("id");
-			content = jsonObject.getString("content");
+			content = jsonObject.getString("content").trim();
 			title = jsonObject.getString("title");
 			datetime = jsonObject.getString("datetime");
 			unread = jsonObject.getString("unread").equals("1");

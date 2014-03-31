@@ -19,4 +19,11 @@
     <string name="mark_item_as_read">Mark item as read</string>
     <string name="login">login</string>
     <string name="share">Share</string>
+    <string name="drawer_close">Close the navigational drawer</string>
+    <string name="drawer_open">Open the navigational drawer</string>
+    <string-array name="options_array">
+        <item>Newest</item>
+        <item>Unread</item>
+        <item>Starred</item>
+    </string-array>
 </resources>

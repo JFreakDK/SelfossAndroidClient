@@ -24,8 +24,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 /**
- * A fragment representing a single Item detail screen. This fragment is either contained in a {@link FeedEntryMainActivity} in two-pane mode (on tablets)
- * or a {@link FeedEntryContentActivity} on handsets.
+ * A fragment representing a single Item detail screen. This fragment is either contained in a {@link FeedEntryMainActivity} in two-pane mode (on
+ * tablets) or a {@link FeedEntryContentActivity} on handsets.
  */
 public class FeedEntryContentFragment extends Fragment implements MarkAsUnreadOperationListener, StarOperationListener {
 	/**
@@ -99,7 +99,8 @@ public class FeedEntryContentFragment extends Fragment implements MarkAsUnreadOp
 	}
 
 	private boolean needsEscaping(String content) {
-		return Html.fromHtml(content).equals(content);
+		String fromHtml = Html.fromHtml(content).toString();
+		return fromHtml.equals(content);
 	}
 
 	private String parseLink(String link) {
