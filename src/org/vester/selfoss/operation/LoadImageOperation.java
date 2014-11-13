@@ -44,8 +44,8 @@ public class LoadImageOperation implements Operation {
 	@Override
 	public void processResponse(InputStream in) throws JSONException {
 		final Bitmap bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(in), 32, 32, true);
-
-		File f = new File(IconLoader.getCacheDir(context), entry.icon);
+		
+		File f = new File(context.getCacheDir(), entry.icon);
 
 		writeFile(bitmap, f);
 		guiThread.post(new Runnable() {
