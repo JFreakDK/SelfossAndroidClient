@@ -38,7 +38,7 @@ import android.util.Log;
 public class SelfossTask implements Runnable {
 
 	private String stringURL;
-	private final String backupURL;
+	private String backupURL;
 
 	private final Operation operation;
 	private SharedPreferences prefs;
@@ -103,32 +103,33 @@ public class SelfossTask implements Runnable {
 			} else {
 				Log.e(SelfossTask.class.getName(), "Response code was not 200 OK but: " + con.getResponseCode());
 			}
-			if (backupURL != null && backupURL.equals(stringURL)) {
-				String url = prefs.getString(SettingsActivity.URL, SettingsActivity.URL_DEFAULT);
-				Editor editor = prefs.edit();
-				editor.putString(SettingsActivity.URL, backupURL);
-				editor.putString(SettingsActivity.BACKUP_URL, url);
-				editor.commit();
-			}
+			String url = prefs.getString(SettingsActivity.URL, SettingsActivity.URL_DEFAULT);
+			Editor editor = prefs.edit();
+			editor.putString(SettingsActivity.URL, stringURL);
+			editor.putString(SettingsActivity.BACKUP_URL, backupURL);
+			editor.commit();
 		} catch (ConnectException e) {
-			String orgUrl = stringURL;
-			if (backupURL != null && !backupURL.equals(stringURL)) {
-				Log.d(SelfossTask.class.getName(), " connect exception occured trying to connect to " + orgUrl, e);
-				stringURL = backupURL;
+			if (backupURL != null) {
+				Log.d(SelfossTask.class.getName(), " connect exception occured trying to connect to " + stringURL, e);
+                String tempURL = stringURL;
+                stringURL = backupURL;
+                backupURL = tempURL;
 				run();
 			} else {
 				errorCallBack.errorOccured(stringURL, operation, e);
-				Log.e(SelfossTask.class.getName(), "ConnectException occured trying to connect to " + orgUrl + ", Operation: " + operation, e);
+				Log.e(SelfossTask.class.getName(), "ConnectException occured trying to connect to " + stringURL + ", Operation: " + operation, e);
 			}
 		} catch (SocketTimeoutException e) {
 			String orgUrl = stringURL;
-			if (backupURL != null && !backupURL.equals(stringURL)) {
-				Log.d(SelfossTask.class.getName(), "Timeout occured trying to connect to " + orgUrl + ", Operation: " + operation, e);
+			if (backupURL != null) {
+				Log.d(SelfossTask.class.getName(), "Timeout occurred trying to connect to " + stringURL + ", Operation: " + operation, e);
+                String tempURL = stringURL;
 				stringURL = backupURL;
+                backupURL = tempURL;
 				run();
 			} else {
 				errorCallBack.errorOccured(stringURL, operation, e);
-				Log.e(SelfossTask.class.getName(), "Timeout occured trying to connect to " + orgUrl + ", Operation: " + operation, e);
+				Log.e(SelfossTask.class.getName(), "Timeout occurred trying to connect to " + stringURL + ", Operation: " + operation, e);
 			}
 		} catch (MalformedURLException e) {
 			errorCallBack.errorOccured(stringURL, operation, e);

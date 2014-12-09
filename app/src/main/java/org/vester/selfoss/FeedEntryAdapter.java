@@ -118,7 +118,7 @@ final class FeedEntryAdapter extends ArrayAdapter<FeedEntry> {
 
 							@Override
 							public void errorOccured(String url, Operation operation, Exception e) {
-								Log.e(FeedEntryAdapter.class.getName(), "Error occured trying to load icon for: " + entry + " on url: " + url, e);
+								Log.e(FeedEntryAdapter.class.getName(), "Error occurred trying to load icon for: " + entry + " on url: " + url, e);
 							}
 
 						}));
