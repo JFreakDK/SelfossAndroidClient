@@ -76,9 +76,8 @@ public class MarkAllAsReadOperation implements Operation {
 	public void writeOutput(HttpURLConnection con) throws IOException {
 		con.setDoOutput(true);
 		String parameter = createParameter();
-		con.setChunkedStreamingMode(0);
 		con.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		// con.setFixedLengthStreamingMode(parameter.getBytes().length);
+		con.setFixedLengthStreamingMode(parameter.getBytes("UTF8").length);
 		con.connect();
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
 		writer.write(parameter);

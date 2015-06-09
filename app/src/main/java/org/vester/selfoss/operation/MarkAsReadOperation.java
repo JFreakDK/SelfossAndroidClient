@@ -62,7 +62,7 @@ public class MarkAsReadOperation implements Operation {
 	public void writeOutput(HttpURLConnection con) throws IOException {
 		con.setDoOutput(true);
 		String parameter = createParameter();
-		con.setChunkedStreamingMode(0);
+		con.setFixedLengthStreamingMode(parameter.getBytes("UTF8").length);
 		con.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		// con.setFixedLengthStreamingMode(parameter.getBytes().length);
 		con.connect();

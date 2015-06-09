@@ -60,6 +60,7 @@ public class UnstarOperation implements Operation {
 
 	@Override
 	public void writeOutput(HttpURLConnection con) throws IOException {
+		con.setFixedLengthStreamingMode(0);
 	}
 
 	@Override

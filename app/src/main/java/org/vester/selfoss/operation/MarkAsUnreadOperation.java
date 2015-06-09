@@ -61,9 +61,8 @@ public class MarkAsUnreadOperation implements Operation {
 	public void writeOutput(HttpURLConnection con) throws IOException {
 		String parameter = createParameter();
 		con.setDoOutput(true);
-		con.setChunkedStreamingMode(0);
+		con.setFixedLengthStreamingMode(parameter.getBytes("UTF8").length);
 		con.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		// con.setFixedLengthStreamingMode(parameter.getBytes().length);
 		con.connect();
 		if (parameter != null) {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
